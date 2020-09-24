@@ -1,0 +1,21 @@
+setwd("C:/Users/patpa/University/MAST30034/Assignment 1")
+mydata = read.csv("pre_processed_vivaldi4.csv")
+
+library("dplyr")
+library("sf")
+library("curl")
+library("tmap")
+library("tmaptools")
+library("ggmap")
+library("devtools")
+
+map<-get_stamenmap(rbind(as.numeric(paste(geocode_OSM("Manhattan")$bbox))), zoom = 11)
+
+
+ggmap(map) + geom_point(aes(x = dropoff_longitude, y = dropoff_latitude), colour="white", size = 0.01, data = mydata, alpha = .5)
+ggmap(map) + geom_bin2d(bins=100, data=mydata, aes(x =dropoff_longitude, y = dropoff_latitude))
+ggmap(map) + coord_cartesian() + geom_hex(bins=100, data=mydata, aes(x= dropoff_longitude, y = dropoff_latitude)) + scale_fill_gradient(low = "blue", high = "red")
+
+my_model = lm(formula = mydata$tip_amount ~ mydata$trip_distance + mydata$fare_amount + mydata$passenger_count)
+summary(my_model)
+
